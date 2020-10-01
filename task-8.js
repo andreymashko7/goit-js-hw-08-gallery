@@ -1,14 +1,19 @@
 import transactionGallery from './gallery-items.js';
 
-const galleryEl = document.querySelector('.js-gallery');
-const isModalOn = document.querySelector('div.lightbox');
-const imageAtrr = document.querySelector('.lightbox__image');
-const modalCloseBtn = document.querySelector(
-  'button[data-action="close-lightbox"]',
-);
+const refs = {
+  gallery: document.querySelector('.js-gallery'),
+  modal: document.querySelector('div.lightbox'),
+  modalImage: document.querySelector('.lightbox__image'),
+  modalCloseBtn: document.querySelector('button[data-action="close-lightbox"]'),
+  backdrop: document.querySelector('.lightbox__overlay'),
+};
+
+refs.gallery.addEventListener('click', onOpenModal);
+refs.modalCloseBtn.addEventListener('click', onCloseModal);
+refs.backdrop.addEventListener('click', onbackdropClick);
 
 const cardsMarkup = createPhotoMarcup();
-galleryEl.insertAdjacentHTML('beforeend', cardsMarkup);
+refs.gallery.insertAdjacentHTML('beforeend', cardsMarkup);
 
 function createPhotoMarcup() {
   return transactionGallery
@@ -31,24 +36,33 @@ function createPhotoMarcup() {
     .join('');
 }
 
-galleryEl.addEventListener('click', onOpenModal);
-
 function onOpenModal(evt) {
   evt.preventDefault();
   const isImageClick = evt.target;
 
   if (isImageClick) {
-    isModalOn.classList.add('is-open');
+    refs.modal.classList.add('is-open');
+    refs.modalImage.src = evt.target.dataset.source;
 
-    imageAtrr.src = evt.target.dataset.source;
+    window.addEventListener('keydown', onEscKeyPress);
   }
 }
 
-// Закрытие модального окна по клику на кнопку button[data-action="close-modal"].
+function onCloseModal() {
+  refs.modal.classList.remove('is-open');
+  refs.modalImage.src = '';
 
-modalCloseBtn.addEventListener('click', onModalCloseBtn);
+  window.removeEventListener('keydown', onEscKeyPress);
+}
 
-function onModalCloseBtn() {
-  isModalOn.classList.remove('is-open');
-  imageAtrr.src = '';
+function onbackdropClick(event) {
+  if (event.currentTarget === event.target) {
+    onCloseModal();
+  }
+}
+
+function onEscKeyPress(event) {
+  if (event.code === 'Escape') {
+    onCloseModal();
+  }
 }
