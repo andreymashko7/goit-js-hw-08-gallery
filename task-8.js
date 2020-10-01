@@ -1,25 +1,11 @@
 import transactionGallery from './gallery-items.js';
 
-// console.log(transactionGallery);
-
-// {
-//   /* <li class="gallery__item">
-//   <a
-//     class="gallery__link"
-//     href="https://cdn.pixabay.com/photo/2010/12/13/10/13/tulips-2546_1280.jpg"
-//   >
-//     <img
-//       class="gallery__image"
-//       src="https://cdn.pixabay.com/photo/2010/12/13/10/13/tulips-2546__340.jpg"
-//       data-source="https://cdn.pixabay.com/photo/2010/12/13/10/13/tulips-2546_1280.jpg"
-//       alt="Tulips"
-//     />
-//   </a>
-// </li>; */
-// }
-
 const galleryEl = document.querySelector('.js-gallery');
-galleryEl.addEventListener('click', onImageContainerClick);
+const isModalOn = document.querySelector('div.lightbox');
+const imageAtrr = document.querySelector('.lightbox__image');
+const modalCloseBtn = document.querySelector(
+  'button[data-action="close-lightbox"]',
+);
 
 const cardsMarkup = createPhotoMarcup();
 galleryEl.insertAdjacentHTML('beforeend', cardsMarkup);
@@ -45,6 +31,24 @@ function createPhotoMarcup() {
     .join('');
 }
 
-function onImageContainerClick(evt) {}
+galleryEl.addEventListener('click', onOpenModal);
 
-// console.log(galleryEl);
+function onOpenModal(evt) {
+  evt.preventDefault();
+  const isImageClick = evt.target;
+
+  if (isImageClick) {
+    isModalOn.classList.add('is-open');
+
+    imageAtrr.src = evt.target.dataset.source;
+  }
+}
+
+// Закрытие модального окна по клику на кнопку button[data-action="close-modal"].
+
+modalCloseBtn.addEventListener('click', onModalCloseBtn);
+
+function onModalCloseBtn() {
+  isModalOn.classList.remove('is-open');
+  imageAtrr.src = '';
+}
